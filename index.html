@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern MCQ Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="layout-wrapper">
+        <!-- Sidebar for Question Palette -->
+        <div class="sidebar">
+            <h3>Question Palette</h3>
+            <div id="question-palette" class="palette-grid">
+                <!-- Squares injected by JS -->
+            </div>
+        </div>
+
+        <!-- Main Quiz Area -->
+        <div class="app-container">
+        <div class="quiz-card">
+            
+            <!-- Quiz Screen -->
+            <div id="quiz-screen" class="screen active">
+                <div class="quiz-header">
+                    <h2 id="question-text">Loading question...</h2>
+                    <span id="progress-indicator" class="progress-indicator">Question 1/10</span>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+
+                <div id="options-container" class="options-container">
+                    <!-- Options will be injected here via JavaScript -->
+                </div>
+
+                <div class="quiz-footer" style="display: flex; justify-content: space-between; width: 100%;">
+                    <button id="prev-btn" class="btn secondary-btn hidden">Previous</button>
+                    <button id="next-btn" class="btn primary-btn hidden">Next Question</button>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="result-screen" class="screen hidden">
+                <div class="result-content">
+                    <div class="trophy-icon">🏆</div>
+                    <h2>Quiz Completed!</h2>
+                    <p class="score-text">You scored <span id="score">0</span> out of <span id="total-questions">10</span></p>
+                    <div class="score-details">
+                        <div class="stat-box correct-stat">
+                            <span class="stat-label">Correct Answers</span>
+                            <span id="correct-count" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-box incorrect-stat">
+                            <span class="stat-label">Incorrect Answers</span>
+                            <span id="incorrect-count" class="stat-value">0</span>
+                        </div>
+                    </div>
+                    <button id="restart-btn" class="btn primary-btn">Restart Quiz</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
