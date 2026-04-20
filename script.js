@@ -250,6 +250,7 @@ const totalQuestionsEl = document.getElementById('total-questions');
 const correctCountEl = document.getElementById('correct-count');
 const incorrectCountEl = document.getElementById('incorrect-count');
 const restartBtn = document.getElementById('restart-btn');
+const resetQuizBtn = document.getElementById('reset-quiz-btn');
 
 // Game State
 let currentQuestionIndex = 0;
@@ -257,9 +258,28 @@ let currentQuestionIndex = 0;
 let userAnswers = new Array(questions.length).fill(null);
 
 // Initialize Quiz
-function initQuiz() {
-    currentQuestionIndex = 0;
-    userAnswers = new Array(questions.length).fill(null);
+function initQuiz(isFresh = false) {
+    if (isFresh) {
+        localStorage.removeItem('mcq_userAnswers');
+        localStorage.removeItem('mcq_currentIndex');
+        currentQuestionIndex = 0;
+        userAnswers = new Array(questions.length).fill(null);
+    } else {
+        const savedAnswers = localStorage.getItem('mcq_userAnswers');
+        const savedIndex = localStorage.getItem('mcq_currentIndex');
+        
+        if (savedAnswers) {
+            userAnswers = JSON.parse(savedAnswers);
+        } else {
+            userAnswers = new Array(questions.length).fill(null);
+        }
+        
+        if (savedIndex !== null) {
+            currentQuestionIndex = parseInt(savedIndex, 10);
+        } else {
+            currentQuestionIndex = 0;
+        }
+    }
     
     quizScreen.classList.add('active');
     quizScreen.classList.remove('hidden');
@@ -279,6 +299,17 @@ function renderPalette() {
         const btn = document.createElement('button');
         btn.className = 'palette-btn';
         btn.textContent = index + 1;
+        
+        // Apply saved answer styles (correct/wrong) on refresh
+        const savedAnswer = userAnswers[index];
+        if (savedAnswer) {
+            if (savedAnswer === questions[index].correct) {
+                btn.classList.add('answered-correct');
+            } else {
+                btn.classList.add('answered-wrong');
+            }
+        }
+        
         btn.onclick = () => {
             currentQuestionIndex = index;
             loadQuestion();
@@ -289,6 +320,7 @@ function renderPalette() {
 
 // Load Question
 function loadQuestion() {
+    localStorage.setItem('mcq_currentIndex', currentQuestionIndex.toString());
     const currentQuestion = questions[currentQuestionIndex];
     const savedAnswer = userAnswers[currentQuestionIndex];
     
@@ -318,6 +350,13 @@ function loadQuestion() {
     const answeredCount = userAnswers.filter(ans => ans !== null).length;
     const progressPercent = (answeredCount / questions.length) * 100;
     progressBar.style.width = `${progressPercent}%`;
+
+    // Toggle Restart button visibility
+    if (answeredCount > 0) {
+        resetQuizBtn.classList.remove('hidden');
+    } else {
+        resetQuizBtn.classList.add('hidden');
+    }
 
     // Update Palette Active State
     const paletteBtns = paletteGrid.children;
@@ -369,6 +408,8 @@ function loadQuestion() {
 function selectOption(selectedBtn, selectedText) {
     // Save answer
     userAnswers[currentQuestionIndex] = selectedText;
+    localStorage.setItem('mcq_userAnswers', JSON.stringify(userAnswers));
+    
     const currentQuestion = questions[currentQuestionIndex];
     
     const allOptions = optionsContainer.children;
@@ -453,7 +494,15 @@ function showResults() {
 }
 
 // Handle Restart
-restartBtn.addEventListener('click', initQuiz);
+restartBtn.addEventListener('click', () => initQuiz(true));
+
+if (resetQuizBtn) {
+    resetQuizBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to restart the test? All progress will be lost.')) {
+            initQuiz(true);
+        }
+    });
+}
 
 // Start on load
-window.onload = initQuiz;
+window.onload = () => initQuiz(false);
